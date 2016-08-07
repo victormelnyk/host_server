@@ -1,0 +1,37 @@
+version: '2'
+services:
+  data:
+    container_name: data
+    build: ./../data_server
+    image: data
+    stdin_open: true
+    tty: true
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes_from:
+      - data
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+      - PGDATA=/data/postgres
+    depends_on:
+      - data
+  app:
+    container_name: app
+    build: ./../test_app
+    image: app
+    ports:
+      - "80:8080"
+    links:
+    - postgres
+    depends_on:
+      - data
+      - postgres
+  jenkins:
+    container_name: jenkins
+    image: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
