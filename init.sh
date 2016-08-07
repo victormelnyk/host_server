@@ -37,3 +37,4 @@ pip install docker-compose
 mkdir -p /data
 mkdir -p /data/postgresql
 mkdir -p /data/jenkins
+chown uadmin:uadmin -R /data
