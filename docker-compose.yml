@@ -1,14 +1,13 @@
 version: '2'
 services:
   data:
+    image: victormelnyk/data
     container_name: data
-    build: ./../data_server
-    image: data
     stdin_open: true
     tty: true
   postgres:
-    container_name: postgres
     image: postgres
+    container_name: postgres
     ports:
       - "5432:5432"
     volumes_from:
@@ -19,9 +18,8 @@ services:
     depends_on:
       - data
   app:
+    image: victormelnyk/test_app
     container_name: app
-    build: ./../test_app
-    image: app
     ports:
       - "80:8080"
     links:
@@ -30,8 +28,8 @@ services:
       - data
       - postgres
   jenkins:
-    container_name: jenkins
     image: jenkins
+    container_name: jenkins
     ports:
       - "8080:8080"
       - "50000:50000"
