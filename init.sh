@@ -32,3 +32,8 @@ usermod -aG docker uadmin
 # install docker-composer
 apt-get -y install python-pip
 pip install docker-compose
+
+# create data folder
+mkdir -p /data
+mkdir -p /data/postgresql
+mkdir -p /data/jenkins
