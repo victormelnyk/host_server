@@ -1,23 +1,5 @@
 version: '2'
 services:
-  postgres:
-    image: postgres
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - /data/postgresql:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=pgpass
-  app:
-    image: victormelnyk/test_app
-    container_name: app
-    ports:
-      - "80:8080"
-    links:
-    - postgres
-    depends_on:
-      - postgres
   jenkins:
     image: victormelnyk/jenkins
     container_name: jenkins
@@ -28,4 +10,30 @@ services:
       - /data/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - /data/postgresql:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+  nginx:
+    image: nginx:1.11
+    container_name: nginx
+    ports:
+      - "80:80"
+#    volumes:
+#      - /data/nginx:/usr/share/nginx/html
+  app:
+    image: victormelnyk/test_app
+    container_name: app
+    ports:
+      - "8010:80"
+    links:
+    - postgres
+    depends_on:
+      - postgres
+
 
