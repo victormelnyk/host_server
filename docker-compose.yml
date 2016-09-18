@@ -1,37 +1,83 @@
 version: '2'
 services:
+  nginx:
+    image: nginx:1.11
+    container_name: nginx
+    ports:
+      - 2010:80
+#    volumes:
+#      - /data/nginx:/usr/share/nginx/html
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - 2012:5432
+    volumes:
+      - /data/postgresql:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+
   jenkins:
     image: victormelnyk/jenkins
     container_name: jenkins
     ports:
-      - "8080:8080"   # web ui
+      - 2013:8080   # web ui
       # - "50000:50000" # slave agent port
     volumes:
       - /data/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
-  postgres:
-    image: postgres
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - /data/postgresql:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=pgpass
-  nginx:
-    image: nginx:1.11
-    container_name: nginx
-    ports:
-      - "80:80"
-#    volumes:
-#      - /data/nginx:/usr/share/nginx/html
 
+# logs
+  elasticsearch:
+    image: elasticsearch:2.4
+    container_name: elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+  logstash:
+    image: logstash:2.4
+    container_name: logstash
+    volumes:
+      - $PWD:/config
+    command: logstash -f /config/logstash.conf
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+  kibana:
+    image: kibana:4.6
+    container_name: kibana
+    ports:
+      - 2014:5601
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+      - ELASTICSEARCH_URL=http://elasticsearch:9200 #https://github.com/docker-library/kibana/issues/35
+  logspout:
+    image: gliderlabs/logspout:v3.1
+    container_name: logspout
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: syslog://logstash:5000
+    links:
+      - logstash
+    depends_on:
+      - logstash
+    environment:
+      - LOGSPOUT=ignore
+
+# apps
   app:
     image: victormelnyk/test_app
     container_name: app
     ports:
-      - "8010:80"
+      - 2020:80
     links:
       - postgres
     depends_on:
@@ -40,18 +86,14 @@ services:
   like-stat-server:
     image: victormelnyk/like-stat-server
     container_name: like-stat-server
-    #build: ./server
     ports:
-      - "2030:2030"
+      - 2030:2030
   like-stat-client:
     image: victormelnyk/like-stat-client
     container_name: like-stat-client
-    #build: ./client
     ports:
-      - "2036:80"
+      - 2036:80
     links:
       - like-stat-server
     depends_on:
       - like-stat-server
-
-
