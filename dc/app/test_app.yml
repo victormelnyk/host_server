@@ -1,0 +1,26 @@
+version: '2'
+services:
+  test_app:
+    image: victormelnyk/test_app
+    container_name: app
+    ports:
+      - 2020:80
+    links:
+      - postgres
+    depends_on:
+      - postgres
+
+  like-stat-server:
+    image: victormelnyk/like-stat-server
+    container_name: like-stat-server
+    ports:
+      - 2030:2030
+  like-stat-client:
+    image: victormelnyk/like-stat-client
+    container_name: like-stat-client
+    ports:
+      - 2036:80
+    links:
+      - like-stat-server
+    depends_on:
+      - like-stat-server

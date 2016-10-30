@@ -1,0 +1,46 @@
+version: '2'
+services:
+  elasticsearch:
+    image: elasticsearch:2.4
+    container_name: elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+
+  logstash:
+    image: logstash:2.4
+    container_name: logstash
+    volumes:
+      - $PWD:/config
+    command: logstash -f /config/logstash.conf
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+
+  kibana:
+    image: kibana:4.6
+    container_name: kibana
+    ports:
+      - 2014:5601
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+      - ELASTICSEARCH_URL=http://elasticsearch:9200 #https://github.com/docker-library/kibana/issues/35
+
+  logspout:
+    image: gliderlabs/logspout:v3.1
+    container_name: logspout
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: syslog://logstash:5000
+    links:
+      - logstash
+    depends_on:
+      - logstash
+    environment:
+      - LOGSPOUT=ignore

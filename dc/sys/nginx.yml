@@ -1,0 +1,9 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:1.11
+    container_name: nginx
+    ports:
+      - 2010:80
+#    volumes:
+#      - /data/nginx:/usr/share/nginx/html
