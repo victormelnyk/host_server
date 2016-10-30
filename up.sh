@@ -6,4 +6,3 @@ docker-compose \
   -f dc/app/test_app.yml \
   -f dc/app/like-stat.yml \
   up -d
-#  -f dc/sys/log.yml \

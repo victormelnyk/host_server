@@ -2,7 +2,7 @@ version: '2'
 services:
   test_app:
     image: victormelnyk/test_app
-    container_name: app
+    container_name: test_app
     ports:
       - 2020:80
     links:

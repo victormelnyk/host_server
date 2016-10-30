@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # create new password for root
 
 # add user (from root)
